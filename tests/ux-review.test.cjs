@@ -11,5 +11,5 @@ for(const level of ['a1','a2']){
  assert.ok(css.includes('@media(max-width:760px)'),'mobile breakpoint');
  for(const original of ['app.js','content.js','style.css'])assert.ok(fs.existsSync(path.join(root,level,original)));
 }
-assert.ok(read('index.html').includes('İNCELEME TASLAĞI'));
+assert.ok(!read('index.html').includes('İNCELEME TASLAĞI'));
 console.log('PASS: review-only A1/A2 assets, syntax, scripts, mobile/desktop layouts and isolated progress.');
