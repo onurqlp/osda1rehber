@@ -1,5 +1,5 @@
 const pdfModelUrl='https://www.osd.at/wp-content/uploads/2023/07/ZA2-Modellsatz.pdf';
-const officialImageBase='https://raw.githubusercontent.com/onurqlp/osda1rehber/a2-onay-taslagi-20261019/a2/assets/model/';
+const officialImageBase='assets/model/';
 const officialPages={
  'lesen-1':{description:'Önce 10 başlığı, sonra eşleştireceğin 5 kısa metni gör.',images:[['za2-page-02.jpg',2,'Başlıkların olduğu gerçek sayfa'],['za2-page-03.jpg',3,'Beş metnin olduğu devam sayfası']]},
  'lesen-2':{description:'Önce uzun metnin yerini, sonra A/B/C cevap kutularını incele.',images:[['za2-page-04.jpg',4,'Uzun okuma metninin gerçek sayfası'],['za2-page-05.jpg',5,'Beş A/B/C sorusunun gerçek sayfası']]},

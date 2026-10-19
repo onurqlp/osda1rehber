@@ -49,3 +49,6 @@ dialog#zoom{max-width:min(1120px,96vw);width:1120px;max-height:94vh;overflow:aut
  #zoom-content .official-zoomed-image{width:1280px;min-width:1280px;max-width:none}
 }
 @media print{.official-evidence .official-preview img{max-height:none}.official-more{display:block}.official-more .official-scan{display:block}}
+
+.level-switch{display:inline-flex;align-items:center;padding:9px 12px;border-radius:6px;background:#102541;color:#f5e8cf;font-size:13px;font-weight:750;white-space:nowrap;text-decoration:none}
+@media(max-width:760px){.level-switch{position:absolute;right:12px;top:10px;padding:5px 7px;font-size:11px}}
