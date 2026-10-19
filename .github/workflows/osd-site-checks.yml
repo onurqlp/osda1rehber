@@ -14,9 +14,14 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check a1/app.js
+          node --check a1/ux-review.js
           node --check a1/content.js
           node --check a2/app.js
+          node --check a2/ux-review.js
           node --check a2/content.js
           node --check tests/site-smoke.test.cjs
+          node --check tests/ux-review.test.cjs
       - name: Structure, images, scoring, progression and links
-        run: node tests/site-smoke.test.cjs
+        run: |
+          node tests/site-smoke.test.cjs
+          node tests/ux-review.test.cjs
