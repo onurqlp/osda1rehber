@@ -29,9 +29,6 @@
     }
   };
 
-  const ribbon = make('div', 'review-ribbon', 'İNCELEME TASLAĞI  •  Canlı sitede değişiklik yok');
-  document.body.prepend(ribbon);
-
   const summary = make('aside','study-progress-summary');
   summary.innerHTML = '<div><span class="study-eyebrow">SENİN İLERLEMEN</span><strong class="study-total" aria-live="polite"></strong><small>Her görevi öğrenince işaretleyebilirsin.</small></div><div class="study-track" role="progressbar" aria-label="Öğrenilen görevler" aria-valuemin="0"><i></i></div><p id="study-storage-note">İlerlemen bu cihazın tarayıcısında saklanır; başka cihazlara aktarılmaz.</p>';
   const extras = document.querySelector('#home-extras');
