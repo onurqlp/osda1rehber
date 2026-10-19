@@ -36,6 +36,29 @@ assert.ok(!app.includes("osd-za1-guide-v1"),'A1 storage key leaked');
 assert.ok(app.includes("osd-za2-guide-v1"));
 assert.ok(app.includes('z2aNdPQnbZM'));
 assert.ok(css.length>10000);
+const officialAssets={
+ 'lesen-1':['za2-page-02.jpg','za2-page-03.jpg'],
+ 'lesen-2':['za2-page-04.jpg','za2-page-05.jpg'],
+ 'horen-1':['za2-hoeren-1.jpg'],
+ 'horen-2':['za2-hoeren-2.jpg'],
+ 'horen-3':['za2-hoeren-3.jpg'],
+ 'schreiben-1':['za2-page-07.jpg','za2-page-08.jpg'],
+ 'sprechen-1':['za2-page-10.jpg'],
+ 'sprechen-2':['za2-page-09.jpg']
+};
+for(const [task,assets] of Object.entries(officialAssets)){
+  assert.ok(app.includes("'"+task+"'"),'Missing official scan mapping '+task);
+  for(const asset of assets){
+    assert.ok(fs.existsSync(path.resolve(root,'assets/model',asset)),'Missing official screenshot '+asset);
+    assert.ok(app.includes(asset),'App not referencing official screenshot '+asset);
+    const bytes=fs.statSync(path.resolve(root,'assets/model',asset)).size;
+    assert.ok(bytes>10000&&bytes<1800000,'Invalid scan size '+asset);
+  }
+}
+assert.ok(app.includes('officialScanCard(t.id)'), 'Official source preview must be in task template');
+assert.ok(app.indexOf('officialScanCard(t.id)')<app.indexOf("${heading(2,'Karşıma nasıl bir soru gelecek?')}"), 'Real source should come before teacher example');
+assert.ok(app.includes('resmî ÖSD ZA2 model kitapçığından'),'Official screenshot must be attributed');
+
 for(const file of ['../assets/ayda-logo.png','style.css','app.js','content.js']){
   assert.ok(fs.existsSync(path.resolve(root,file)),'Missing '+file);
 }
