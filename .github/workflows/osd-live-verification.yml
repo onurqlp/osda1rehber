@@ -36,6 +36,8 @@ jobs:
             echo "$path HTTP $status"
             test "$status" = "200"
           done
-          curl -fsSL "$BASE/a1/app.js" | grep -q 'officialA1Card'
-          curl -fsSL "$BASE/a2/app.js" | grep -q 'officialScanCard'
+          curl -fsSL --max-time 15 "$BASE/a1/app.js" -o /tmp/osd-a1.js
+          curl -fsSL --max-time 15 "$BASE/a2/app.js" -o /tmp/osd-a2.js
+          grep -q 'officialA1Card' /tmp/osd-a1.js
+          grep -q 'officialScanCard' /tmp/osd-a2.js
           echo "SUCCESS: Live pages, both official exam task image sets and scripts verified"
