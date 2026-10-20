@@ -23,7 +23,7 @@ for(const [level,scanNames] of [['a1',scans1],['a2',scans2]]){
  for(const n of scanNames){const file=path.join(root,level,'assets/model',n);assert.ok(fs.existsSync(file),file);const sz=fs.statSync(file).size;assert.ok(sz>8000&&sz<1_800_000,n+' invalid image');}
 }
 assert.ok(js1.includes('officialA1Card(t.id)'));assert.ok(js2.includes('officialScanCard(t.id)'));
-assert.ok(landing.includes('href="a1/"')&&landing.includes('href="a2/"'));assert.ok(landing.includes('assets/ayda-logo.png'));
+assert.ok(landing.includes('href="a1/"')&&landing.includes('href="a2/"'));assert.ok(landing.includes('assets/ayda-logo.png') || landing.includes('https://www.aydadil.com/wp-content/uploads/2026/10/ayda-home-v89-baa791945bb954a30b.png'), 'Landing approved logo missing');
 assert.ok(landing.includes('genel')&&landing.includes('Sınav günü'));
 assert.equal(get('CNAME').trim(),'osd.aydadil.com');
 for(const n of ['ayda-logo.png','shop.webp','cafe.webp','kitchen.webp'])assert.ok(fs.existsSync(path.join(root,'assets',n)));
