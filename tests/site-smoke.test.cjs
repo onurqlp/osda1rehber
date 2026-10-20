@@ -9,7 +9,9 @@ assert.equal(ids1.length,11);assert.equal(ids2.length,8);assert.ok(s1.checklist.
 for(const [level,html,js,ids] of [['a1',a1,js1,ids1],['a2',a2,js2,ids2]]){
   assert.ok(html.includes('href="../"'),'Missing level selector backlink: '+level);
   assert.ok(html.includes('src="app.js"')&&html.includes('src="content.js"')&&html.includes('href="style.css"'));
-  assert.ok(html.includes('src="../assets/ayda-logo.png"'));
+  assert.ok(html.includes('src="../assets/ayda-logo.png"') ||
+    html.includes('src="https://www.aydadil.com/wp-content/uploads/2026/10/ayda-home-v89-baa791945bb954a30b.png"'),
+    'Missing approved AYDA logo: '+level);
   assert.ok(js.includes('official'+level.toUpperCase()+'Card')||js.includes('officialScanCard(t.id)'));
   assert.ok(js.includes("assets/model/"),'Images must be on owned domain');
   assert.ok(!js.includes('raw.githubusercontent.com'),'External branch dependency '+level);
