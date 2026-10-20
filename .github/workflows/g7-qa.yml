@@ -24,7 +24,7 @@ jobs:
           try:
             for path,selector in [('/','.sitehead .brand img'),('/a1/','header .brand img'),('/a2/','header .brand img')]:
               for name,w,h in [('desktop',1440,900),('mobile',390,844)]:
-                d.set_window_size(w,h);d.get('https://osd.aydadil.com'+path+'?g7='+str(time.time()));time.sleep(3)
+                d.set_window_size(w,h);d.get('https://osd.aydadil.com'+path+'?g7='+str(time.time()));time.sleep(5)
                 z=d.execute_script("""const a=document.querySelector(arguments[0]);let r=a?.getBoundingClientRect();return{url:location.href,logo:!!a&&a.complete&&a.naturalWidth>40,width:r?.width,visible:!!r&&r.width>60&&r.height>18,overflow:document.documentElement.scrollWidth-innerWidth,title:document.title}""",selector)
                 print(json.dumps({'page':path,'screen':name,'checks':z},ensure_ascii=False),flush=True)
                 assert z['logo'] and z['visible'] and z['overflow']<=4
