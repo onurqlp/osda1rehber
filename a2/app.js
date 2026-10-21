@@ -13,12 +13,38 @@ const officialPages={
 function officialScanCard(id){
  const item=officialPages[id];
  if(!item)return '';
- const display=([filename,page,label])=>`<figure class="official-scan"><button type="button" class="official-preview zoomable" aria-label="${label}; büyütmek için dokun"><img loading="lazy" decoding="async" src="${officialImageBase+filename}" alt="ÖSD resmî ZA2 model sınavı PDF sayfa ${page}: ${label}" width="1240" height="1754"></button><figcaption>${label} · Model PDF sayfa ${page}</figcaption><a href="${pdfModelUrl}#page=${page}" target="_blank" rel="noopener noreferrer">Orijinal PDF'de bu sayfayı aç ↗</a></figure>`;
- return `<section class="official-evidence" aria-label="ÖSD resmî model sınav sayfası"><span class="official-kicker">ÖSD'NİN YAYIMLADIĞI ÖRNEK SINAV</span><h5>Önce gerçek sayfayı gör</h5><p>${item.description}</p>${display(item.images[0])}${item.images.length>1?`<details class="official-more"><summary>Devam sayfasını da göster</summary>${display(item.images[1])}</details>`:''}<p class="official-disclaimer">Görüntü, resmî ÖSD ZA2 model kitapçığından alınmıştır. Gerçek sınavda aynı soruların çıkacağı anlamına gelmez.</p></section>`;
+ const twoPages=item.images.length>1;
+ const pageLabels={
+  'lesen-1':['1. Başlıklar','2. Metinler'],
+  'lesen-2':['1. Okuma metni','2. A/B/C soruları'],
+  'schreiben-1':['1. Gelen e-posta','2. Cevap sayfası']
+ };
+ const titles=pageLabels[id]||[];
+ const display=([filename,page,label],i)=>`<figure class="official-scan" data-official-figure="${i}" ${i?'hidden':''}><button type="button" class="official-preview zoomable" aria-label="${label}; büyütmek için dokun"><img loading="lazy" decoding="async" src="${officialImageBase+filename}" alt="ÖSD resmî ZA2 model sınavı PDF sayfa ${page}: ${label}" width="1240" height="1754"></button><figcaption>${label} · Model PDF sayfa ${page}</figcaption><a href="${pdfModelUrl}#page=${page}" target="_blank" rel="noopener noreferrer">Orijinal PDF'de bu sayfayı aç ↗</a></figure>`;
+ const selector=twoPages?`<div class="official-page-selector" aria-label="Bu görevin iki sınav sayfası">${item.images.map(([filename,page],i)=>`<button type="button" class="official-page-tab${i===0?' is-active':''}" data-official-page="${i}" aria-pressed="${i===0?'true':'false'}"><span class="official-page-step">${i+1}</span><span class="official-page-label">${titles[i]}<small>PDF sayfa ${page}</small></span></button>`).join('')}</div><p class="official-pages-note">Bu görev <strong>2 sayfadan</strong> oluşuyor. Metni, soruları ve cevap alanını birlikte incele.</p>`:'';
+ return `<section class="official-evidence" data-official-task="${id}" aria-label="ÖSD resmî model sınav sayfası"><span class="official-kicker">ÖSD'NİN YAYIMLADIĞI ÖRNEK SINAV</span><h5>${twoPages?'Bu görevin iki sınav sayfasını gör':'Önce gerçek sayfayı gör'}</h5><p>${item.description}</p>${selector}<div class="official-page-stage">${item.images.map(display).join('')}</div>${twoPages?'<p class="official-page-live" aria-live="polite">1 / 2: İlk sınav sayfası</p>':''}<p class="official-disclaimer">Görüntü, resmî ÖSD ZA2 model kitapçığından alınmıştır. Gerçek sınavda aynı soruların çıkacağı anlamına gelmez.</p></section>`;
 }
 const allTasks=sections.flatMap(s=>s.tasks);
 const heading=(n,title)=>`<h4><span class="n">${n}</span>${title}</h4>`;
 document.querySelector('#chapters').innerHTML=sections.map((s,si)=>`<section id="${s.id}" class="chapter"><div class="chapter-head"><div class="eyebrow">BÖLÜM 0${si+1}</div><h2>${s.name}<span>${s.tr}</span></h2><span class="badge">${s.time}</span><span class="badge">${s.tasks.length} görev</span><p>${s.intro}</p><nav class="task-links" aria-label="${s.name} görevleri">${s.tasks.map((t,i)=>`<a href="#${t.id}">Görev ${i+1} · ${t.title}</a>`).join('')}</nav></div>${s.tasks.map((t,i)=>{const next=allTasks[allTasks.indexOf(t)+1];return `<article class="task" id="${t.id}"><div class="task-top">${s.name} · AUFGABE ${i+1}</div><h3 class="title">${t.title}</h3>${heading(1,'Bu bölümde ne yapacağım?')}<p>${t.what}</p>${officialScanCard(t.id)}${heading(2,'Karşıma nasıl bir soru gelecek?')}<div class="example"><div class="example-label">Açıklamalı öğretici örnek · sınav sorusu değildir</div>${t.example}</div>${heading(3,'Adım adım nasıl yapacağım?')}<ol>${t.steps.map(x=>`<li>${x}</li>`).join('')}</ol>${heading(4,'Doğru düşünme yöntemi')}<p class="muted">Öğrencinin zihninden geçen düşünce</p><p class="thought">${t.think}</p>${heading(5,'Öğretmenin tavsiyesi')}<p class="tip">${t.tip}</p>${heading(6,'En sık yapılan hatalar')}<div class="two mistakes"><div><strong>KAÇIN</strong>${t.wrong}</div><div><strong>BUNU YAP</strong>${t.right}</div></div>${heading(7,'Aklında sadece bunu tut')}<p class="remember">${t.remember}</p><a class="next" href="#${next?next.id:'sozlu-video'}">${next?'Sonraki görev: '+next.title:'Sözlü sınav videosuna geç'} →</a></article>`}).join('')}${s.id==='sprechen'?`<section class="end-section" id="sozlu-video"><div class="eyebrow">İZLEYEREK TANI</div><h2>Sözlü Sınav Nasıl Geçiyor? Gerçek Bir Örnek İzle</h2><h3>1. Kendini Tanıtma · Aufgabe 1</h3><p>Beş konuyu nasıl anlatacağını ve gelen ek sorulara nasıl cevap vereceğini izle.</p><div class="video-box" id="video-box"><button type="button" id="load-video">▷ Bireysel örneği izle</button></div><p><a href="https://www.youtube.com/watch?v=z2aNdPQnbZM" target="_blank" rel="noopener">Resmî bireysel sözlü örneğini YouTube’da aç ↗</a></p><h3>2. Birlikte Plan Yapma · Aufgabe 2</h3><p>Partnerinle ne, nerede, ne zaman ve nasıl konusunda ortak karar vermeyi izle.</p><div class="video-box" id="joint-video-box"><button type="button" id="load-joint-video">▷ Karşılıklı konuşma örneğini izle</button></div><p><a href="https://www.youtube.com/watch?v=wN6QPgvCyJg" target="_blank" rel="noopener">Resmî karşılıklı sözlü örneğini YouTube’da aç ↗</a></p><p class="muted">Videolar yalnızca düğmesine dokunduğunda yüklenir; otomatik oynatılmaz. Bunlar ÖSD’nin resmî örnek video bağlantılarıdır.</p><h3>Videoyu izlerken nelere dikkat etmeliyim?</h3><ul><li>Aday beş konuyu nasıl anlatıyor?</li><li>Kendini beş konuda nasıl tanıtıyor?</li><li>Partnerine hangi soruları soruyor?</li><li>Etkinliği birlikte nasıl planlıyorlar?</li><li>Ne zaman ve nereye gideceklerine nasıl karar veriyorlar?</li></ul><p class="muted">Videonun konuşma dökümü doğrulanamadığı için adaya atfedilen sözler veya zaman damgaları kullanılmadı. Yukarıdaki cümleler bağımsız öğretici örneklerdir.</p><a href="#sinav-gunu">Sınav günü rehberine geç →</a></section>`:''}</section>`).join('');
+// Multi-page exam sheets: expose question and answer sheets in obvious adjacent tabs.
+document.querySelector('#chapters').addEventListener('click',event=>{
+ const button=event.target.closest('.official-page-tab');
+ if(!button)return;
+ const card=button.closest('.official-evidence');
+ if(!card)return;
+ const page=Number(button.dataset.officialPage);
+ const figures=[...card.querySelectorAll('.official-page-stage > .official-scan')];
+ if(!Number.isInteger(page)||page<0||page>=figures.length)return;
+ figures.forEach((figure,index)=>{figure.hidden=index!==page;});
+ card.querySelectorAll('.official-page-tab').forEach((tab,index)=>{
+  const active=index===page;
+  tab.classList.toggle('is-active',active);
+  tab.setAttribute('aria-pressed',String(active));
+ });
+ const status=card.querySelector('.official-page-live');
+ if(status)status.textContent=(page+1)+' / '+figures.length+': '+card.querySelectorAll('.official-page-tab .official-page-label')[page].firstChild.textContent.trim();
+});
 const key='osd-za2-guide-v1';let state={checks:[],last:null},storageOK=true;
 try{const data=JSON.parse(localStorage.getItem(key)||'null');if(data&&typeof data==='object'){state.checks=Array.isArray(data.checks)?data.checks.filter(n=>Number.isInteger(n)&&n>=0&&n<checklist.length):[];state.last=allTasks.some(t=>t.id===data.last)?data.last:null;}}catch{storageOK=false;}
 function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch{storageOK=false;document.querySelector('#storage-note').textContent='Tarayıcı kalıcı kayda izin vermiyor. Seçimlerin bu sayfa açık kaldığı sürece korunur.';}}
