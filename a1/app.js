@@ -15,12 +15,34 @@ const officialA1Pages={
 };
 function officialA1Card(taskId){
  const e=officialA1Pages[taskId];if(!e)return '';
- const img=([name,page,label])=>`<figure class="official-scan"><button type="button" class="official-preview zoomable" aria-label="${label}, büyütmek için dokun"><img loading="lazy" decoding="async" src="assets/model/${name}" alt="ÖSD ZA1 resmî model, PDF sayfa ${page}: ${label}" width="1200" height="1700"></button><figcaption>${label} · ÖSD model sınavı sayfa ${page}</figcaption><a href="${officialA1Pdf}#page=${page}" target="_blank" rel="noopener noreferrer">Resmî PDF’de aç ↗</a></figure>`;
- return `<section class="official-evidence"><span class="official-kicker">ÖSD RESMÎ ÖRNEK SINAV</span><h5>Gerçek sınav sayfasını gör</h5><p>${e.lead}</p>${img(e.scans[0])}${e.scans[1]?`<details class="official-more"><summary>Devam sayfasını göster</summary>${img(e.scans[1])}</details>`:''}<p class="official-disclaimer">Bu görüntü ÖSD tarafından yayımlanan ZA1 model sınavından alınmıştır. Gerçek sınavda aynı soruların çıkacağı anlamına gelmez.</p></section>`;
+ const isMultiPage=e.scans.length>1;
+ // For Lesen 1 and 3, a second exam sheet carries the choices.
+ const titles=taskId==='lesen-1'?['1. Sorular','2. İlanlar']:['1. Metinler','2. Resimler'];
+ const img=([name,page,label],i)=>`<figure class="official-scan" data-official-figure="${i}" ${i?'hidden':''}><button type="button" class="official-preview zoomable" aria-label="${label}, büyütmek için dokun"><img loading="lazy" decoding="async" src="assets/model/${name}" alt="ÖSD ZA1 resmî model, PDF sayfa ${page}: ${label}" width="1200" height="1700"></button><figcaption>${label} · ÖSD model sınavı sayfa ${page}</figcaption><a href="${officialA1Pdf}#page=${page}" target="_blank" rel="noopener noreferrer">Resmî PDF’de aç ↗</a></figure>`;
+ const selector=isMultiPage?`<div class="official-page-selector" aria-label="Bu görevin sınav sayfaları">${e.scans.map(([name,page],i)=>`<button type="button" class="official-page-tab${i===0?' is-active':''}" data-official-page="${i}" aria-pressed="${i===0?'true':'false'}"><span class="official-page-step">${i+1}</span><span class="official-page-label">${titles[i]}<small>PDF sayfa ${page}</small></span></button>`).join('')}</div><p class="official-pages-note">Bu görev <strong>2 sayfadan</strong> oluşuyor. Soruları ve seçenekleri birlikte görmeden geçme.</p>`:'';
+ return `<section class="official-evidence" data-official-task="${taskId}"><span class="official-kicker">ÖSD RESMÎ ÖRNEK SINAV</span><h5>${isMultiPage?'Bu görevin iki sınav sayfasını gör':'Gerçek sınav sayfasını gör'}</h5><p>${e.lead}</p>${selector}<div class="official-page-stage">${e.scans.map(img).join('')}</div>${isMultiPage?'<p class="official-page-live" aria-live="polite">1 / 2: Sorular ve yönergeler</p>':''}<p class="official-disclaimer">Bu görüntü ÖSD tarafından yayımlanan ZA1 model sınavından alınmıştır. Gerçek sınavda aynı soruların çıkacağı anlamına gelmez.</p></section>`;
 }
 const allTasks=sections.flatMap(s=>s.tasks);
 const heading=(n,title)=>`<h4><span class="n">${n}</span>${title}</h4>`;
 document.querySelector('#chapters').innerHTML=sections.map((s,si)=>`<section id="${s.id}" class="chapter"><div class="chapter-head"><div class="eyebrow">BÖLÜM 0${si+1}</div><h2>${s.name}<span>${s.tr}</span></h2><span class="badge">${s.time}</span><span class="badge">${s.tasks.length} görev</span><p>${s.intro}</p><nav class="task-links" aria-label="${s.name} görevleri">${s.tasks.map((t,i)=>`<a href="#${t.id}">Görev ${i+1} · ${t.title}</a>`).join('')}</nav></div>${s.tasks.map((t,i)=>{const next=allTasks[allTasks.indexOf(t)+1];return `<article class="task" id="${t.id}"><div class="task-top">${s.name} · AUFGABE ${i+1}</div><h3 class="title">${t.title}</h3>${heading(1,'Bu bölümde ne yapacağım?')}<p>${t.what}</p>${officialA1Card(t.id)}${heading(2,'Karşıma nasıl bir soru gelecek?')}<div class="example"><div class="example-label">Açıklamalı öğretici örnek · sınav sorusu değildir</div>${t.example}</div>${heading(3,'Adım adım nasıl yapacağım?')}<ol>${t.steps.map(x=>`<li>${x}</li>`).join('')}</ol>${heading(4,'Doğru düşünme yöntemi')}<p class="muted">Öğrencinin zihninden geçen düşünce</p><p class="thought">${t.think}</p>${heading(5,'Öğretmenin tavsiyesi')}<p class="tip">${t.tip}</p>${heading(6,'En sık yapılan hatalar')}<div class="two mistakes"><div><strong>KAÇIN</strong>${t.wrong}</div><div><strong>BUNU YAP</strong>${t.right}</div></div>${heading(7,'Aklında sadece bunu tut')}<p class="remember">${t.remember}</p><a class="next" href="#${next?next.id:'sozlu-video'}">${next?'Sonraki görev: '+next.title:'Sözlü sınav videosuna geç'} →</a></article>`}).join('')}${s.id==='sprechen'?`<section class="end-section" id="sozlu-video"><div class="eyebrow">İZLEYEREK TANI</div><h2>Sözlü Sınav Nasıl Geçiyor? Gerçek Bir Örnek İzle</h2><div class="video-box" id="video-box"><button type="button" id="load-video">▷ Videoyu yükle</button></div><p class="muted">Video yalnızca düğmeye bastığında YouTube’dan yüklenir; otomatik oynatılmaz.</p><a href="https://youtu.be/-m-S4tomdzY" target="_blank" rel="noopener">YouTube’da Aç ↗</a><h3>Videoyu izlerken nelere dikkat etmeliyim?</h3><ul><li>Aday nasıl konuşmaya başlıyor?</li><li>Tek kelime mi, cümleler mi kullanıyor?</li><li>Sınav görevlisi nasıl iletişim kuruyor?</li><li>Fotoğraf anlatımında nasıl ilerleniyor?</li><li>Diyalog karşılıklı nasıl sürdürülüyor?</li></ul><p class="muted">Videonun konuşma dökümü doğrulanamadığı için adaya atfedilen sözler veya zaman damgaları kullanılmadı. Yukarıdaki cümleler bağımsız öğretici örneklerdir.</p><a href="#sinav-gunu">Sınav günü rehberine geç →</a></section>`:''}</section>`).join('');
+// Navigate both official sheets without hiding the second one in a disclosure.
+document.querySelector('#chapters').addEventListener('click',event=>{
+ const button=event.target.closest('.official-page-tab');
+ if(!button)return;
+ const card=button.closest('.official-evidence');
+ if(!card)return;
+ const page=Number(button.dataset.officialPage);
+ const figures=[...card.querySelectorAll('.official-page-stage > .official-scan')];
+ if(!Number.isInteger(page)||page<0||page>=figures.length)return;
+ figures.forEach((figure,index)=>{figure.hidden=index!==page;});
+ card.querySelectorAll('.official-page-tab').forEach((tab,index)=>{
+  const current=index===page;
+  tab.classList.toggle('is-active',current);
+  tab.setAttribute('aria-pressed',String(current));
+ });
+ const status=card.querySelector('.official-page-live');
+ if(status)status.textContent=(page+1)+' / '+figures.length+': '+card.querySelectorAll('.official-page-tab .official-page-label')[page].firstChild.textContent.trim();
+});
 const key='osd-za1-guide-v1';let state={checks:[],last:null},storageOK=true;
 try{const data=JSON.parse(localStorage.getItem(key)||'null');if(data&&typeof data==='object'){state.checks=Array.isArray(data.checks)?data.checks.filter(n=>Number.isInteger(n)&&n>=0&&n<checklist.length):[];state.last=allTasks.some(t=>t.id===data.last)?data.last:null;}}catch{storageOK=false;}
 function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch{storageOK=false;document.querySelector('#storage-note').textContent='Tarayıcı kalıcı kayda izin vermiyor. Seçimlerin bu sayfa açık kaldığı sürece korunur.';}}
