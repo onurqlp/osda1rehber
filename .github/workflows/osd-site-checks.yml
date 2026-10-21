@@ -22,8 +22,10 @@ jobs:
           node --check tests/site-smoke.test.cjs
           node --check tests/ux-review.test.cjs
           node --check tests/a1-official-pages.test.cjs
+          node --check tests/a2-official-pages.test.cjs
       - name: Structure, images, scoring, progression and links
         run: |
           node tests/site-smoke.test.cjs
           node tests/ux-review.test.cjs
           node tests/a1-official-pages.test.cjs
+          node tests/a2-official-pages.test.cjs
